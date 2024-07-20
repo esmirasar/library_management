@@ -8,7 +8,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-print(BASE_DIR)
 
 SECRET_KEY = 'django-insecure-d6ucktw(nud18)u^5inwk55di$#%o+gseg0#8l*+mr@^b%e#@l'
 
@@ -91,6 +90,8 @@ LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
+
+USE_L10N = True
 
 USE_TZ = True
 
