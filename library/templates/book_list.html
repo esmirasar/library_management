@@ -5,11 +5,22 @@
     <title>Список книг</title>
 </head>
 <body>
-    <h1>Список книг</h1>
+<h1>Список книг</h1>
+    <form action="{% url 'book_list' %}" method="get">
+        <input type="text" name="searсh" placeholder="Поиск по названию, автору или году">
+        <button type="submit">Поиск</button>
+    </form>
+    <a href="{% url 'add_book' %}">
+        <button type="submit">Добавить новую книгу в библиотеку</button>
+    </a>
     <ul>
         {% for book in books %}
             <li>
                 {{ book.title }} - {{ book.author }} ({{ book.year }})
+                <form action="{% url 'change_status' book.id %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit">Изменить статус</button>
+                </form>
                 <form action="{% url 'delete_book' book.id %}" method="post" style="display: inline;">
                     {% csrf_token %}
                     <button type="submit">Удалить</button>

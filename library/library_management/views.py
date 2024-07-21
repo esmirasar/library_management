@@ -7,21 +7,20 @@ from .forms import BooksAddForm
 '''функция для добавления книги в библиотеку через форму'''
 
 
-def add_book_web(request):
+def add_book_web(request: str) -> render:
+    '''Функция для добавления книги в библиотеку через веб-форму.'''
     if request.method == 'POST':
         form = BooksAddForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('book_list')  # Перенаправление на страницу успешного добавления
+            return redirect('book_list')
     else:
         form = BooksAddForm()
     return render(request, 'add_book.html', {'form': form})
 
 
-'''функция для добавления книги в библиотеку через консоль'''
-
-
-def add_book_console():
+def add_book_console() -> None:
+    '''функция для добавления книги в библиотеку через консоль'''
     try:
         title = input('Введите название книги: ')
         author = input('Введите автора книги: ')
@@ -40,19 +39,15 @@ def add_book_console():
         print(f'Произошла ошибка: {e}')
 
 
-'''функция для удаления книги из библиотеки через форму'''
-
-
-def delete_book_web(request, book_id):
+def delete_book_web(request: str, book_id: int) -> render:
+    '''функция для удаления книги из библиотеки через форму'''
     book = get_object_or_404(Books, id=book_id)
     book.delete()
     return render(request, 'book_list.html')
 
 
-'''функция для удаления книги из библиотеки через консоль'''
-
-
-def delete_book_console():
+def delete_book_console() -> None:
+    '''функция для удаления книги из библиотеки через консоль'''
     book_id = int(input('Введите ID книги, которую нужно удалить: '))
     try:
         book = Books.objects.get(id=book_id)
@@ -64,10 +59,8 @@ def delete_book_console():
         print('Книга с таким ID не существует')
 
 
-'''функция для поиска книги в библиотеке'''
-
-
-def book_search():
+def book_search() -> None:
+    '''функция для поиска книги через консоль'''
     print("Вы можете искать книги по таким параметрам, как:",
           "1.Title", "2.Author", "3.Year", sep='\n')
     try:
@@ -95,18 +88,19 @@ def book_search():
         print(f'Произошла ошибка: {e}')
 
 
-'''функция для вывода всех книг через форму'''
-
-
-def book_list(request):
-    books = Books.objects.all()
+def book_list(request: str) -> render:
+    '''функция для вывода списка книг через форму'''
+    query = request.GET.get('searсh')
+    if query:
+        books = Books.objects.filter(title__icontains=query) | Books.objects.filter(
+            author__icontains=query) | Books.objects.filter(year__icontains=query)
+    else:
+        books = Books.objects.all()
     return render(request, 'book_list.html', {'books': books})
 
 
-'''функция для вывода всех книг в консоль'''
-
-
-def all_books():
+def all_books() -> None:
+    '''функция для вывода всех книг в консоль'''
     try:
         books_list = Books.objects.all().values()
         for i in books_list:
@@ -118,7 +112,19 @@ def all_books():
 '''функция для изменения статуса книги'''
 
 
-def change_status():
+def change_status_web(request: str, book_id: int) -> render:
+    '''функция для изменения статуса через форму'''
+    book = get_object_or_404(Books, id=book_id)
+    if book.status == 'в наличии':
+        book.status = 'выдана'
+    else:
+        book.status = 'в наличии'
+    book.save()
+    return redirect('book_list')
+
+
+def change_status_console() -> None:
+    '''функция для изменения статуса через консоль'''
     try:
         print("Доступные статусы:", "1. В наличии", "2. Выдана")
         book_id = int(input('Введите ID книги, статус которой нужно сменить: '))
