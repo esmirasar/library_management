@@ -5,7 +5,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'library.settings')
 
 django.setup()
 
-from library_management.views import add_book, delete_book, book_search, all_books, change_status
+from library_management.views import add_book_console, delete_book_console, book_search, all_books, change_status
 
 
 def main_loop():
@@ -20,9 +20,9 @@ def main_loop():
         choice = input("Выберите действие: ")
 
         if choice == '1':
-            add_book()
+            add_book_console()
         elif choice == '2':
-            delete_book()
+            delete_book_console()
         elif choice == '3':
             book_search()
         elif choice == '4':

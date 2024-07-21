@@ -1,12 +1,27 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from django.core.exceptions import ValidationError
+
 from .models import Books
+from .forms import BooksAddForm
+
+'''функция для добавления книги в библиотеку через форму'''
 
 
-def add_book():
-    title = input('Введите название книги: ')
-    author = input('Введите автора книги: ')
-    year = int(input("Введите год издания: "))
+def add_book_web(request):
+    if request.method == 'POST':
+        form = BooksAddForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('book_list')  # Перенаправление на страницу успешного добавления
+    else:
+        form = BooksAddForm()
+    return render(request, 'add_book.html', {'form': form})
+
+
+'''функция для добавления книги в библиотеку через консоль'''
+
+
+def add_book_console():
     try:
         title = input('Введите название книги: ')
         author = input('Введите автора книги: ')
@@ -18,16 +33,26 @@ def add_book():
 
         new_book.full_clean()
         new_book.save()
-        print(f'Книга успешно добавлена в библиотеку и хранится с ID: {new_book.id}')
+        print(f'Книга успешно добавлена в библиотеку!')
     except ValueError:
         print("Кажется одно из полей некорректно")
-    except ValidationError:
-        print("Ошибка валидации")
     except Exception as e:
         print(f'Произошла ошибка: {e}')
 
 
-def delete_book():
+'''функция для удаления книги из библиотеки через форму'''
+
+
+def delete_book_web(request, book_id):
+    book = get_object_or_404(Books, id=book_id)
+    book.delete()
+    return render(request, 'book_list.html')
+
+
+'''функция для удаления книги из библиотеки через консоль'''
+
+
+def delete_book_console():
     book_id = int(input('Введите ID книги, которую нужно удалить: '))
     try:
         book = Books.objects.get(id=book_id)
@@ -37,6 +62,9 @@ def delete_book():
         print(f'Произошла ошибка: {e}')
     except Books.DoesNotExist:
         print('Книга с таким ID не существует')
+
+
+'''функция для поиска книги в библиотеке'''
 
 
 def book_search():
@@ -67,6 +95,17 @@ def book_search():
         print(f'Произошла ошибка: {e}')
 
 
+'''функция для вывода всех книг через форму'''
+
+
+def book_list(request):
+    books = Books.objects.all()
+    return render(request, 'book_list.html', {'books': books})
+
+
+'''функция для вывода всех книг в консоль'''
+
+
 def all_books():
     try:
         books_list = Books.objects.all().values()
@@ -74,6 +113,9 @@ def all_books():
             print(i, sep='\n')
     except Exception as e:
         print(f'Произошла ошибка: {e}')
+
+
+'''функция для изменения статуса книги'''
 
 
 def change_status():
