@@ -41,9 +41,13 @@ def add_book_console() -> None:
 
 def delete_book_web(request: str, book_id: int) -> render:
     '''функция для удаления книги из библиотеки через форму'''
-    book = get_object_or_404(Books, id=book_id)
-    book.delete()
-    return render(request, 'book_list.html')
+    try:
+        book = get_object_or_404(Books, id=book_id)
+        book.delete()
+        return redirect('book_list')
+    except Exception as e:
+        print(f'Произошла ошибка: {e}')
+
 
 
 def delete_book_console() -> None:
