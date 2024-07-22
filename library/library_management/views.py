@@ -4,8 +4,6 @@ from django.core.exceptions import ValidationError
 from .models import Books
 from .forms import BooksAddForm
 
-'''функция для добавления книги в библиотеку через форму'''
-
 
 def add_book_web(request: str) -> render:
     '''Функция для добавления книги в библиотеку через веб-форму.'''
@@ -47,7 +45,6 @@ def delete_book_web(request: str, book_id: int) -> render:
         return redirect('book_list')
     except Exception as e:
         print(f'Произошла ошибка: {e}')
-
 
 
 def delete_book_console() -> None:
